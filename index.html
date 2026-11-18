@@ -64,6 +64,14 @@ ul{margin:.2rem 0;padding-left:1.2em}li{margin:2px 0}
 .tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:0 0 .7rem}
 .tabs button{font:inherit;font-size:.82rem;padding:.25rem .7rem;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
 .tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.empf{display:flex;flex-direction:column;gap:.7rem}
+.erow{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;padding:.8rem 1rem;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;background:var(--panel)}
+.erow.hoch{border-left-color:var(--bad)}.erow.mittel{border-left-color:var(--warn)}.erow.tief{border-left-color:var(--ok)}
+.etag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--accent);color:#fff;white-space:nowrap}
+.emeta{font-size:.75rem;color:var(--muted);margin:0 0 .15rem}
+.etitle{font-weight:600;margin:0 0 .2rem}
+.ewhy{font-size:.85rem;color:var(--muted);margin:0}
+.ehint{border:1px dashed var(--line);border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--muted);margin:0 0 1rem}
 @media print{.noprint{display:none}}
 </style>
 </head>
@@ -74,6 +82,12 @@ ul{margin:.2rem 0;padding-left:1.2em}li{margin:2px 0}
   <p class="lead" id="lead">Daten werden geladen …</p>
 </header>
 <div class="banner" id="banner"></div>
+
+<section id="empfehlungen">
+  <h2 id="empf-title">Empfehlungen für die nächste Periode</h2>
+  <p class="ehint"><b>Hinweis:</b> Alles in diesem Bereich sind <b>Empfehlungen</b>. Sie werden automatisch aus den Zahlen der letzten Periode abgeleitet (Regeln aus dem TOPSIM-Handbuch und unserer BSC). Sie ersetzen keine Teamentscheidung. Prüft sie immer mit den Wirtschaftsnachrichten der neuen Periode und dem Planungstool.</p>
+  <div class="empf" id="empf"></div>
+</section>
 
 <section id="upload" class="noprint">
   <h2>Neue Periode hochladen</h2>
@@ -386,6 +400,7 @@ function render() {
   $('bsc-title').textContent = `BSC-Cockpit: Ist Periode ${cur} gegen Ziel`;
   $('pi-title').textContent = `Plan gegen Ist P${cur}`;
   renderLead(cur, c, p);
+  renderEmpf(cur);
   renderCards(cur);
   renderEntw(ps);
   renderKonk(cur);
@@ -566,6 +581,67 @@ function renderMass(cur) {
   const k = keys[keys.length - 1];
   $('mass-sub').textContent = `Massnahmen nach der Auswertung von Periode ${k}. Rollen gemäss RACI-Matrix.` + (k < cur ? ` (Für Periode ${cur} noch nicht aktualisiert.)` : '');
   Object.keys(roles).forEach((r) => { const ul = el('ul'); (M[k][r] || []).forEach((x) => ul.append(el('li', { text: x }))); box.append(el('div', { class: 'panel' }, el('h3', { text: r }), el('p', { class: 'role', text: roles[r] }), ul)); });
+}
+
+
+// ---------- Empfehlungen ----------
+function avgK(k, f, excl) { const v = k.filter((r) => r.unternehmen !== excl && typeof r[f] === 'number').map((r) => r[f]); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }
+function buildEmpf(cur) {
+  const c = P(cur), ps = periods(), prevN = ps.length > 1 ? ps[ps.length - 2] : null, p = prevN !== null ? P(prevN) : {};
+  const k = c.konkurrenz || [], me = 'U' + DATA.unternehmen, nx = cur + 1, E = [];
+  const add = (prio, rolle, bereich, titel, why) => E.push({ prio, rolle, bereich, titel, why });
+  const avgPreis = avgK(k, 'preis', me), avgTech = avgK(k, 'technologie', me), avgWerb = avgK(k, 'werbung', me), avgVma = avgK(k, 'vertrieb', me), avgKz = avgK(k, 'kundenzufriedenheit', me);
+  const lagerQ = c.absatz ? c.lager / c.absatz : 0;
+  // Markt / Preis
+  if (c.nicht_gedeckt > 0) {
+    if (avgPreis && c.preis < avgPreis) add('hoch', 'CMO', 'Preis', `Preis für P${nx} Richtung ${fmt(Math.round(avgPreis / 10) * 10)} EUR anheben (heute ${fmt(c.preis)} EUR)`,
+      `${fmt(c.nicht_gedeckt)} Stück Nachfrage blieben ungedeckt. Unser Preis lag ${fmt((1 - c.preis / avgPreis) * 100, 1)} % unter dem Schnitt der Konkurrenz (${fmt(avgPreis)} EUR). Solange wir nicht mehr liefern können, bringt ein tiefer Preis keinen Mehrabsatz, nur weniger Marge.`);
+    else add('hoch', 'CPO', 'Kapazität', `Kapazität für P${nx} erhöhen: ${fmt(c.nicht_gedeckt)} Stück Nachfrage blieben ungedeckt`, 'Die Nachfrage ist grösser als das, was wir liefern können. Mehr Fertigungspersonal und allenfalls eine zusätzliche Anlage prüfen.');
+  } else if (lagerQ > 0.1) {
+    add('mittel', 'CMO', 'Absatz', `Lager abbauen: Fertigungsmenge P${nx} senken oder Absatz mit Werbung/Preis ankurbeln`, `Lagerendbestand ${fmt(c.lager)} Stück (${fmt(lagerQ * 100, 1)} % des Absatzes). Lager bindet Kapital und kostet Lagerkosten.`);
+    if (avgPreis && c.preis > avgPreis * 1.02) add('mittel', 'CMO', 'Preis', `Preis prüfen: Mit ${fmt(c.preis)} EUR liegen wir über dem Schnitt (${fmt(avgPreis)} EUR)`, 'Volles Lager und überdurchschnittlicher Preis deuten darauf hin, dass der Preis den Absatz bremst.');
+  }
+  if (typeof c.plan_absatz_m1 === 'number' && c.absatz_m1) {
+    const dev = (c.absatz_m1 - c.plan_absatz_m1) / c.plan_absatz_m1;
+    if (Math.abs(dev) > 0.05) add('mittel', 'CMO', 'Planungsqualität', `Planwert Absatz für P${nx} realistischer setzen`, `Plan ${fmt(c.plan_absatz_m1)} Stück, Ist ${fmt(c.absatz_m1)} Stück (${dev > 0 ? '+' : ''}${fmt(dev * 100, 1)} %). Die Planungsqualität fliesst in die Bewertung ein.`);
+  }
+  if (avgWerb && !(c.nicht_gedeckt > 0) && c.werbung < avgWerb && c.bekanntheit < (avgK(k, 'bekanntheit', me) || 0)) add('tief', 'CMO', 'Werbung', `Werbung leicht erhöhen (heute ${fmt(c.werbung, 2)} MEUR, Schnitt ${fmt(avgWerb, 2)} MEUR)`, `Unsere Bekanntheit (${fmt(c.bekanntheit, 2)}) liegt unter der Konkurrenz. Nur sinnvoll, wenn wir die zusätzliche Nachfrage auch liefern können.`);
+  if (avgVma && c.vertrieb < avgVma && c.nicht_gedeckt === 0) add('tief', 'CMO', 'Vertrieb', `Vertriebspersonal Richtung ${fmt(Math.ceil(avgVma))} MA ausbauen (heute ${fmt(c.vertrieb)})`, 'Wir haben weniger Vertriebsmitarbeitende als der Durchschnitt, und es gibt freie Kapazität.');
+  if (avgTech && c.technologie < avgTech) add('mittel', 'CPO', 'F&E', `F&E-Personal erhöhen: Technologieindex ${fmt(c.technologie, 2)} liegt unter dem Schnitt (${fmt(avgTech, 2)})`, 'Der Technologieindex wirkt auf die Nachfrage und die Kundenzufriedenheit. Effekte zeigen sich mit Verzögerung.');
+  if (avgKz && c.kundenzufriedenheit < avgKz - 1) add('tief', 'CMO', 'Kunden', `Kundenzufriedenheit verbessern (${fmt(c.kundenzufriedenheit, 2)} vs. Schnitt ${fmt(avgKz, 2)})`, 'Hebel: Technologie, Vertrieb, Lieferfähigkeit und ein fairer Preis.');
+  // Produktion / Personal
+  if (c.ausl_ma > 100) {
+    const need = Math.ceil(c.ma_fert * (c.ausl_ma / 100 - 1)), fl = c.fluk_fert || 0;
+    add('hoch', 'CPO', 'Personal', `Für P${nx} rund ${fmt(need + fl)} Fertigungsmitarbeitende einstellen (Ersatz Fluktuation ≈ ${fmt(fl)} + Ausbau ≈ ${fmt(need)})`,
+      `Auslastung Mitarbeitende ${fmt(c.ausl_ma, 1)} %: Überstunden kosten 25 % Zuschlag plus Fixkosten und erhöhen die Nacharbeit (${fmt(c.nacharbeit, 2)} MEUR). Grobe Schätzung bei gleicher Fertigungsmenge – mit dem Planungstool genau rechnen.`);
+  } else if (c.ausl_ma < 95) add('mittel', 'CPO', 'Personal', `Weniger einstellen: Auslastung Mitarbeitende nur ${fmt(c.ausl_ma, 1)} %`, `Überzähliges Personal kostet. Die natürliche Fluktuation (${fmt(c.fluk_fert)} MA) baut den Bestand ohne Entlassungskosten ab.`);
+  if (c.ausl_anl >= 99.9 && (c.nicht_gedeckt > 0 || c.ausl_ma > 100)) add('hoch', 'CPO', 'Anlagen', `Investition in eine neue Fertigungsanlage für P${nx} prüfen`, `Die Anlagen laufen zu ${fmt(c.ausl_anl, 1)} %. Ohne mehr Anlagenkapazität bleibt Wachstum nur über Überstunden möglich (max. +5 %). Neue Anlagen sind erst in der Folgeperiode nutzbar und verbessern den Umweltindex.`);
+  else if (c.ausl_anl < 90) add('mittel', 'CPO', 'Anlagen', `Anlagen besser auslasten (${fmt(c.ausl_anl, 1)} %) oder die älteste Anlage verkaufen`, 'Leerstehende Kapazität verursacht Fixkosten und Abschreibungen.');
+  if (typeof c.pi1 === 'number' && c.pi1 < 1) add('mittel', 'CPO', 'Produktivität', `Produktivität steigern: Produktivitätsindex I ${fmt(c.pi1, 3)}`, `Einarbeitung ${fmt(c.einarbeitung, 3)}, Motivationsindex ${fmt(c.motivationsindex, 3)}. Hebel: Trainingstage, Löhne/Motivation, weniger Neueinstellungen auf einmal.`);
+  if (typeof p.motivation === 'number' && c.motivation < p.motivation - 1) add('mittel', 'CPO', 'Motivation', `Motivation stabilisieren (von ${fmt(p.motivation, 2)} auf ${fmt(c.motivation, 2)} gefallen)`, 'Überstunden und viele neue Mitarbeitende drücken die Motivation. Hebel: Löhne, Training, Überstunden abbauen.');
+  if (c.umweltabgabe > 0) add('tief', 'CPO', 'Umwelt', `Umweltabgabe senken (${fmt(c.umweltabgabe, 2)} MEUR): Umweltindex ${fmt(c.umweltindex, 2)} anheben`, 'Hebel: alte Anlagen durch neue ersetzen, Investitionen in Umweltanlagen. Die Abgabe fällt bei Index 100 weg.');
+  // Finanzen
+  if (c.uek > 20) add('hoch', 'CFO', 'Liquidität', `Überziehungskredit abbauen (${fmt(c.uek, 2)} MEUR)`, 'Der Überziehungskredit ist teuer und belastet das Rating. Lagerabbau, Kosten senken oder günstigere Kredite prüfen.');
+  else if (RATINGS.indexOf(c.rating) >= RATINGS.indexOf('BBB')) add('tief', 'CFO', 'Finanzierung', `Spielraum nutzen: Rating ${c.rating}, Überziehungskredit nur ${fmt(c.uek, 2)} MEUR`, 'Investitionen (Anlagen, F&E) sind finanzierbar. Liquiditätsbedarf für die nächste Periode im Planungstool berechnen und in Moodle melden.');
+  if (k.length) {
+    const rank = [...k].sort((a, b) => b.ebit - a.ebit).findIndex((r) => r.unternehmen === me) + 1;
+    if (rank >= Math.ceil(k.length / 2) + 1) add('hoch', 'CEO', 'Strategie', `Strategie überprüfen: EBIT nur auf Rang ${rank} von ${k.length}`,
+      `Unser EBIT: ${fmt(c.ebit, 2)} MEUR, bestes Unternehmen: ${fmt(Math.max(...k.map((r) => r.ebit)), 2)} MEUR. Die oben markierten Hebel mit hoher Priorität zuerst angehen.`);
+  }
+  // BSC rot
+  DATA.bsc.forEach((b) => { const z = b.ziele[String(cur)]; if (ampel(b, c[b.feld], z) === 'rot') { const zn = b.ziele[String(nx)]; add('mittel', b.verantwortlich, 'BSC', `BSC-Ziel «${b.kpi}» verfehlt: Massnahme festlegen`, `Ist P${cur} ${fmt(c[b.feld])}, Ziel P${cur} ${fmt(z)}` + (zn !== null && zn !== undefined ? `, Ziel P${nx} ${fmt(zn)}.` : '.')); } });
+  const order = { hoch: 0, mittel: 1, tief: 2 };
+  return E.sort((a, b) => order[a.prio] - order[b.prio]);
+}
+function renderEmpf(cur) {
+  $('empf-title').textContent = `Empfehlungen für Periode ${cur + 1}`;
+  const box = $('empf'); box.replaceChildren();
+  const list = buildEmpf(cur).concat(((DATA.empfehlungen || {})[String(cur)] || []).map((x) => ({ ...x, manuell: true })));
+  if (!list.length) { box.append(el('p', { class: 'smallmuted', text: 'Keine besonderen Auffälligkeiten – Kurs halten und mit dem Planungstool feinjustieren.' })); return; }
+  list.forEach((e) => box.append(el('div', { class: 'erow ' + e.prio },
+    el('div', {}, el('span', { class: 'etag', text: 'Empfehlung' })),
+    el('div', {}, el('p', { class: 'emeta', text: `Priorität ${e.prio} · ${e.bereich} · Verantwortlich: ${e.rolle}` + (e.manuell ? ' · ergänzt durch Claude' : ' · automatisch abgeleitet') }),
+      el('p', { class: 'etitle', text: e.titel }), el('p', { class: 'ewhy', text: 'Begründung: ' + e.why })))));
 }
 
 // ---------- Upload ----------
