@@ -457,7 +457,7 @@ function renderCards(cur) {
 }
 function renderEntw(ps) {
   const t = $('tab-entw'); t.replaceChildren();
-  const show = ps.slice(-6);
+  const show = ps;
   const hr = el('tr', {}, el('th', { text: 'Bereich' }), el('th', { text: 'Kennzahl' }), el('th', { text: 'Einheit' }));
   show.forEach((n) => hr.append(el('th', { class: 'r', text: 'P' + n })));
   hr.append(el('th', { class: 'r', text: 'Veränderung' }), el('th', { class: 'r', text: 'in %' }));
