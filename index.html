@@ -83,12 +83,6 @@ ul{margin:.2rem 0;padding-left:1.2em}li{margin:2px 0}
 </header>
 <div class="banner" id="banner"></div>
 
-<section id="empfehlungen">
-  <h2 id="empf-title">Empfehlungen für die nächste Periode</h2>
-  <p class="ehint"><b>Hinweis:</b> Alles in diesem Bereich sind <b>Empfehlungen</b>. Sie werden automatisch aus den Zahlen der letzten Periode abgeleitet (Regeln aus dem TOPSIM-Handbuch und unserer BSC). Sie ersetzen keine Teamentscheidung. Prüft sie immer mit den Wirtschaftsnachrichten der neuen Periode und dem Planungstool.</p>
-  <div class="empf" id="empf"></div>
-</section>
-
 <section id="upload" class="noprint">
   <h2>Neue Periode hochladen</h2>
   <p class="sub">Lade das Bericht-ZIP aus TOPSIM hier hoch. Die Seite liest den Sammelbericht direkt im Browser aus, nichts wird an einen Server geschickt. Danach siehst du sofort die neuen Zahlen.</p>
@@ -171,6 +165,13 @@ ul{margin:.2rem 0;padding-left:1.2em}li{margin:2px 0}
   <div class="two" id="mass"></div>
 </section>
 
+<details id="empfehlungen" style="margin-bottom:1rem">
+  <summary id="empf-title">Empfehlungen für die nächste Periode</summary>
+  <div style="margin-top:.8rem">
+    <p class="ehint"><b>Hinweis:</b> Alles in diesem Bereich sind <b>Empfehlungen</b>. Sie werden automatisch aus den Zahlen der letzten Periode abgeleitet (Regeln aus dem TOPSIM-Handbuch und unserer BSC). Sie ersetzen keine Teamentscheidung. Prüft sie immer mit den Wirtschaftsnachrichten der neuen Periode und dem Planungstool.</p>
+    <div class="empf" id="empf"></div>
+  </div>
+</details>
 <details>
   <summary>Definitionen und Quellen</summary>
   <ul class="smallmuted">
@@ -634,9 +635,10 @@ function buildEmpf(cur) {
   return E.sort((a, b) => order[a.prio] - order[b.prio]);
 }
 function renderEmpf(cur) {
-  $('empf-title').textContent = `Empfehlungen für Periode ${cur + 1}`;
+  
   const box = $('empf'); box.replaceChildren();
   const list = buildEmpf(cur).concat(((DATA.empfehlungen || {})[String(cur)] || []).map((x) => ({ ...x, manuell: true })));
+  $('empf-title').textContent = `Empfehlungen für Periode ${cur + 1} (${list.length})`;
   if (!list.length) { box.append(el('p', { class: 'smallmuted', text: 'Keine besonderen Auffälligkeiten – Kurs halten und mit dem Planungstool feinjustieren.' })); return; }
   list.forEach((e) => box.append(el('div', { class: 'erow ' + e.prio },
     el('div', {}, el('span', { class: 'etag', text: 'Empfehlung' })),
