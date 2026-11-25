@@ -637,5 +637,72 @@
     "Nach jeder Periode das Bericht-ZIP hier hochladen"
    ]
   }
+ },
+ "empfehlungen": {
+  "1": [
+   {
+    "prio": "hoch",
+    "rolle": "CPO",
+    "bereich": "Anlagen (WP P2)",
+    "titel": "Anlage Typ B kaufen (36.1 MEUR, 25'000 Stk) und Anlage Nr. 1 verkaufen",
+    "why": "Kapazität steigt von 42'000 auf 59'000 Stk (mit 5 % Überstunden 62'000). B ist pro Stück günstiger als A (236 vs. 257 EUR Fixkosten) und hat Umweltindex 110: Ø-Index 98.25 statt 91.5, Umweltabgabe ≈ 0.44 statt 1.9 MEUR. Nr. 1 ist abgeschrieben, kostet aber 2.5 MEUR fix pro Periode. Gen. 2 braucht ab P4 doppelte Kapazität pro Gerät."
+   },
+   {
+    "prio": "hoch",
+    "rolle": "CPO",
+    "bereich": "Einkauf (WP P2)",
+    "titel": "Mehr als 50'000 Einsatzstoffe bestellen (Mengenstaffel)",
+    "why": "Ab 50'001 Stück sinkt der Preis bei Lieferant 1 von 540 auf 480 EUR. 50'001 Stück kosten 24.0 MEUR, 50'000 Stück 27.0 MEUR. Restbestand ist für Gen. 2 weiterverwendbar (Lager 50 EUR/Stk). Lieferant 1 passt mit Umwelt- und Sozialindex 100 zu unserer Nachhaltigkeitsstrategie; Lieferant 2 wäre 30 EUR/Stk günstiger. Annahme: Der Staffelpreis gilt für die ganze Bestellmenge."
+   },
+   {
+    "prio": "hoch",
+    "rolle": "CMO",
+    "bereich": "Grossabnehmer (WP P2)",
+    "titel": "Grossabnehmer-Angebot annehmen: 9'000 Stk zu 2'600 EUR",
+    "why": "Bringt 23.4 MEUR Umsatz, 100 % sofort bezahlt. Die variablen Kosten liegen bei rund 1'500 EUR pro Stück, der Auftrag ist also deutlich positiv – sofern die Kapazität reicht."
+   },
+   {
+    "prio": "hoch",
+    "rolle": "CPO",
+    "bereich": "Personal (WP P2)",
+    "titel": "Rund 400–450 Fertigungsmitarbeitende einstellen (Ziel ca. 56'000 Stk)",
+    "why": "Für 56'000 Stk braucht es ca. 1'140 einsetzbare bzw. 1'220 MA im Bestand. Nach ≈ 85 Abgängen bleiben ca. 766. Mit Überstunden (max. 10 %) ginge es mit ≈ 340 Einstellungen, kostet aber 2.5 MEUR fix + 25 % Zuschlag. Viele Neue senken den Einarbeitungsindex – Trainingstage einplanen. Gehalt Fertigung neu 31.9 TEUR."
+   },
+   {
+    "prio": "mittel",
+    "rolle": "CMO",
+    "bereich": "Preis (WP P2)",
+    "titel": "Preis Markt 1 auf ca. 3'050 EUR setzen, Planwert Absatz ≈ 46'000 Stk",
+    "why": "Konkurrenz lag im Schnitt bei 3'056 EUR, Inflation +3 %. Laut WP richtet sich der Absatz stark nach dem Preis und der Heimmarkt kann leicht schrumpfen – darum nicht über den Schnitt."
+   },
+   {
+    "prio": "mittel",
+    "rolle": "CEO",
+    "bereich": "Markt 2 (WP P2)",
+    "titel": "Markteintritt Markt 2 im Team entscheiden",
+    "why": "Pro Unternehmen ca. 10'000 Stk möglich, Preis in FCU (Kurs 8.3), Transport 75 EUR/Stk, eigenes Vertriebsteam nötig. Heimmarkt hat Lieferpriorität. Mit 59'000 Stk Kapazität reicht es nach Markt 1 und Grossabnehmer nur für einige Tausend Stück – Eintritt jetzt nur, wenn die Kapazität (Überstunden oder Anlage Nr. 1 behalten) dafür da ist, sonst ab P3."
+   },
+   {
+    "prio": "mittel",
+    "rolle": "CPO",
+    "bereich": "F&E Gen. 2 (WP P2)",
+    "titel": "Entwicklung Gen. 2 jetzt starten: ca. 60–70 F&E-MA auf Gen. 2",
+    "why": "Für Technologieindex 100 braucht es 170–200 Personenjahre. Markteinführung frühestens P4 – je früher, desto stärker der Einführungseffekt. Gen. 1 nicht vernachlässigen (Technologieindex unter Branchenschnitt). Gehalt F&E neu 46.4 TEUR."
+   },
+   {
+    "prio": "tief",
+    "rolle": "CMO",
+    "bereich": "Marketing (WP P2)",
+    "titel": "Werbung auf ca. 7 MEUR, Corporate Identity mit kleinem Budget starten",
+    "why": "Die Konkurrenz wirbt mit 7 MEUR. CI stärkt Bekanntheit und Image – wichtig für Markt 2 und Gen. 2."
+   },
+   {
+    "prio": "hoch",
+    "rolle": "CFO",
+    "bereich": "Liquidität (WP P2)",
+    "titel": "Liquiditätsbedarf P2 mit Investition und ERP-Upgrade melden",
+    "why": "Zusätzlich: Anlage B 36.1 MEUR, ERP-Upgrade einmalig 3 MEUR, Löhne +3 %, ÜK-Zins 6 %. Grobe Schätzung: Überziehungskredit steigt auf ca. 30–35 MEUR (P0 lag bei 43). Rating BBB im Auge behalten. Genau im Planungstool rechnen und bis 07:00 in Moodle melden."
+   }
+  ]
  }
 }
