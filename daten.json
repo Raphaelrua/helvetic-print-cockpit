@@ -644,8 +644,8 @@
     "prio": "hoch",
     "rolle": "CPO",
     "bereich": "Anlagen (WP P2)",
-    "titel": "Anlage Typ B kaufen (36.1 MEUR, 25'000 Stk) und Anlage Nr. 1 verkaufen",
-    "why": "Kapazität steigt von 42'000 auf 59'000 Stk (mit 5 % Überstunden 62'000). B ist pro Stück günstiger als A (236 vs. 257 EUR Fixkosten) und hat Umweltindex 110: Ø-Index 98.25 statt 91.5, Umweltabgabe ≈ 0.44 statt 1.9 MEUR. Nr. 1 ist abgeschrieben, kostet aber 2.5 MEUR fix pro Periode. Gen. 2 braucht ab P4 doppelte Kapazität pro Gerät."
+    "titel": "Anlagen Nr. 1 und Nr. 2 verkaufen, je 1× Typ B und 1× Typ A kaufen",
+    "why": "Kapazität 25'000 (Nr. 3+4) + 25'000 (B) + 14'000 (A) = 64'000 Stk (mit 5 % Überstunden 67'200). Reicht für Markt 1 (≈ 46'000), Grossabnehmer (9'000) und einen Einstieg in Markt 2. Ø-Umweltindex 100.75 → keine Umweltabgabe mehr (heute 1.9 MEUR). Fixkosten pro Stück sinken von ≈ 304 auf ≈ 254 EUR. Investition 59.1 MEUR, Verkaufserlös Nr. 2 nur ≈ 0.3 MEUR. Nur 1× B (50'000 Stk) wäre zu wenig. Gen. 2 braucht ab P4 doppelte Kapazität – dann evtl. eine weitere B."
    },
    {
     "prio": "hoch",
@@ -701,7 +701,7 @@
     "rolle": "CFO",
     "bereich": "Liquidität (WP P2)",
     "titel": "Liquiditätsbedarf P2 mit Investition und ERP-Upgrade melden",
-    "why": "Zusätzlich: Anlage B 36.1 MEUR, ERP-Upgrade einmalig 3 MEUR, Löhne +3 %, ÜK-Zins 6 %. Grobe Schätzung: Überziehungskredit steigt auf ca. 30–35 MEUR (P0 lag bei 43). Rating BBB im Auge behalten. Genau im Planungstool rechnen und bis 07:00 in Moodle melden."
+    "why": "Zusätzlich: Anlagen B + A 59.1 MEUR, ERP-Upgrade einmalig 3 MEUR, Löhne +3 %, ÜK-Zins 6 %. Grobe Schätzung: Überziehungskredit steigt auf ca. 45–55 MEUR (P0: 43). Das Rating (heute BBB) kann sinken. Genau im Planungstool rechnen und bis 07:00 in Moodle melden."
    }
   ]
  }
